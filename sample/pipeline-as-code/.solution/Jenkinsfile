@@ -1,7 +1,4 @@
 node {
-    stage('init'){
-        git 'https://github.com/abola/devops-lab-sample.git'
-    }
     stage('build'){
         sh 'cd sample/pipeline-as-code && mvn package'
     }
