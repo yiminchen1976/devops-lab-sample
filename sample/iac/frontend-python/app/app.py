@@ -16,8 +16,8 @@ def backend_java():
 
 @app.route('/backend-php')
 def backend_php():
-    return requests.get('http://backend-php/').text
+    return requests.get('http://backend-php:8080/').text
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=5000)
