@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.iac.backend-java.name }}
+  labels:
+    app: {{ .Values.iac.name }}
+spec:
+  replicas: {{ .Values.iac.backend-java.replicas }}
+  strategy:
+    type: {{ .Values.iac.backend-java.strategy }}
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: {{ .Values.iac.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.iac.name }}
+    spec: 
+      restartPolicy: Always
+      containers:
+        - name: {{ .Values.iac.backend-java.name }}
+          image: {{- if .Values.iac.google.project }}gcr.io/{{ .Values.iac.google.project }}/{{- end }}{{ .Values.iac.backend-java.image.repository }}:{{ .Values.iac.backend-java.image.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: {{ .Values.iac.backend-java.name }}
+              containerPort: {{ .Values.iac.backend-java.port }}
+              protocol: TCP
