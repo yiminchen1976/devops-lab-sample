@@ -1,0 +1,19 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: backend-java
+spec:
+  selector:
+    matchLabels:
+      app: iac
+  replicas: 3 
+  template:
+    metadata:
+      labels:
+        app: iac
+    spec:
+      containers:
+      - name: backend-java
+        image: gcr.io/devops-handsup-201904/backend-java:latest
+        ports:
+        - containerPort: 8080
