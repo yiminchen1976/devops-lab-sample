@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.iac.backendjava.name }}
   labels:
-    app: {{ .Values.iac.name }}
+    app: {{ .Values.iac.backendjava.name }}
 spec:
   replicas: {{ .Values.iac.backendjava.replicas }}
   strategy:
@@ -13,11 +13,11 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: {{ .Values.iac.name }}
+      app: {{ .Values.iac.backendjava.name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.iac.name }}
+        app: {{ .Values.iac.backendjava.name }}
     spec:
       restartPolicy: Always
       containers:
