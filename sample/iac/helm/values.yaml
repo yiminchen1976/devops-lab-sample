@@ -1,0 +1,49 @@
+iac:
+  name: iac
+  google:
+    project:
+  backendjava:
+    name: backend-java
+    image:
+      repository: backend-java
+      tag: latest
+    port: 8080
+    replicas: 2
+    strategy: RollingUpdate
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+  backendphp:
+    name: backend-php
+    image:
+      repository: backend-php
+      tag: latest
+    port: 9000
+    replicas: 2
+    strategy: RollingUpdate
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+  frontendpython:
+    name: frontend-python
+    image:
+      repository: frontend-python
+      tag: latest
+    port: 5000
+    replicas: 1
+    strategy: RollingUpdate
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
