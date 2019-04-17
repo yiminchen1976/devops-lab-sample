@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.iac.backendphp.name }}
+  labels:
+    app: {{ .Values.iac.name }}
+spec:
+  replicas: {{ .Values.iac.backendphp.replicas }}
+  strategy:
+    type: {{ .Values.iac.backendphp.strategy }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.iac.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.iac.name }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: {{ .Values.iac.backendphp.name }}
+          image: {{- if .Values.iac.google.project }} gcr.io/{{ .Values.iac.google.project }}/{{- end }}{{ .Values.iac.backendphp.image.repository }}:{{ .Values.iac.backendphp.image.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: {{ .Values.iac.backendphp.name }}
+              containerPort: {{ .Values.iac.backendphp.port }}
+              protocol: TCP
+          resources:
+            limits:
+              cpu: {{ .Values.iac.backendjava.resources.limits.cpu }}
+              memory: {{ .Values.iac.backendjava.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.iac.backendjava.resources.requests.cpu }}
+              memory: {{ .Values.iac.backendjava.resources.requests.memory }}
