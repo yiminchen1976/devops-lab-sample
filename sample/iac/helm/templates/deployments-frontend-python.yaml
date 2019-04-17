@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.iac.frontendpython.name }}
   labels:
-    app: {{ .Values.iac.name }}
+    app: {{ .Values.iac.frontendpython.name }}
 spec:
   replicas: {{ .Values.iac.frontendpython.replicas }}
   strategy:
@@ -13,11 +13,11 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: {{ .Values.iac.name }}
+      app: {{ .Values.iac.frontendpython.name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.iac.name }}
+        app: {{ .Values.iac.frontendpython.name }}
     spec:
       restartPolicy: Always
       containers:
