@@ -10,6 +10,10 @@ hostname       = os.environ.get('HOSTNAME') or 'unknown'
 def index():
     return render_template('index.html', title="DevOps sample")
 
+@app.route('/frontend-python')
+def frontend_php():
+    return hostname
+
 @app.route('/backend-java')
 def backend_java():
     return requests.get('http://backend-java:8080/').text
