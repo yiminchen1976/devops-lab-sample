@@ -7,7 +7,7 @@ pipeline {
         string(description: 'Docker version build tag', name: 'buildTag', defaultValue: '1.0')
         string(description: '[Helm] backend-java replicas', name: 'backendJavaReplicas', defaultValue: '2')
         string(description: '[Helm] backend-php replicas', name: 'backendPhpReplicas', defaultValue: '2')
-        choice(description: '', name: 'stage', choices: ['Dev', 'Lab', 'Production']) 
+        choice(description: '', name: 'stage', choices: ['ci','cd']) 
     }
     
     stages {
@@ -17,37 +17,30 @@ pipeline {
             }
         }
     
-        stage('build'){
+        stage('ci'){
             when {
-                expression { params.stage == 'Dev' }
+                expression { params.stage == 'ci' }
             }
             steps{
-                sh 'cd sample/iac/frontend-python && docker build -t gcr.io/${params.googleProjectId}/frontend-python:$BUILD_TAG .'
-                sh 'cd sample/iac/backend-java && mvn -Dmaven.test.skip=true package && docker build -t gcr.io/${params.googleProjectId}/backend-java:$BUILD_TAG .'
-                sh 'cd sample/iac/backend-php && docker build -t gcr.io/${params.googleProjectId}/backend-php:$BUILD_TAG .'
-            }
-        }
-        
-        stage('push image'){
-            when {
-                expression { params.stage == 'Dev' }
-            }
-            steps{
-                sh 'docker images'
-                sh 'docker tag gcr.io/${params.googleProjectId}/backend-java:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-java:${params.buildTag}'
-                sh 'docker tag gcr.io/${params.googleProjectId}/backend-php:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-php:${params.buildTag}'
-                sh 'docker tag gcr.io/${params.googleProjectId}/frontend-python:$BUILD_TAG gcr.io/${params.googleProjectId}/frontend-python:${params.buildTag}'
-                sh 'docker images'
-                sh 'docker login -u oauth2accesstoken -p ${params.gcrCredentials} https://gcr.io'
-                sh 'docker push gcr.io/${params.googleProjectId}/backend-java:${params.buildTag}'
-                sh 'docker push gcr.io/${params.googleProjectId}/backend-php:${params.buildTag}'
-                sh 'docker push gcr.io/${params.googleProjectId}/frontend-python:${params.buildTag}'
+                sh "cd sample/iac/frontend-python && docker build -t gcr.io/${params.googleProjectId}/frontend-python:$BUILD_TAG ."
+                sh "cd sample/iac/backend-java && mvn -Dmaven.test.skip=true package && docker build -t gcr.io/${params.googleProjectId}/backend-java:$BUILD_TAG ."
+                sh "cd sample/iac/backend-php && docker build -t gcr.io/${params.googleProjectId}/backend-php:$BUILD_TAG ."
+            
+                sh "docker images"
+                sh "docker tag gcr.io/${params.googleProjectId}/backend-java:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-java:${params.buildTag}"
+                sh "docker tag gcr.io/${params.googleProjectId}/backend-php:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-php:${params.buildTag}"
+                sh "docker tag gcr.io/${params.googleProjectId}/frontend-python:$BUILD_TAG gcr.io/${params.googleProjectId}/frontend-python:${params.buildTag}"
+                sh "docker images"
+                sh "docker login -u oauth2accesstoken -p ${params.gcrCredentials} https://gcr.io"
+                sh "docker push gcr.io/${params.googleProjectId}/backend-java:${params.buildTag}"
+                sh "docker push gcr.io/${params.googleProjectId}/backend-php:${params.buildTag}"
+                sh "docker push gcr.io/${params.googleProjectId}/frontend-python:${params.buildTag}"
             }
         }
     
         stage('deploy'){
             when {
-                expression { params.stage == 'Lab' }
+                expression { params.stage == 'cd' }
             }
             steps{
                 sh "helm init && helm template sample/iac/helm --set iac.backendphp.replicas=${params.backendPhpReplicas} --set iac.backendjava.replicas=${params.backendJavaReplicas} --set iac.google.project=${params.googleProjectId} | kubectl apply -f -"
