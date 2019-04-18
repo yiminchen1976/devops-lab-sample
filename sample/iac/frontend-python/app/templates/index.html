@@ -15,7 +15,6 @@ body{
 {% block js %}
 <script type="text/javascript"> 
 var app_location = document.location.origin;
-var socket;
 
 // on page ready
 $(document).ready(function() {
@@ -47,7 +46,7 @@ $(document).ready(function() {
     var that = this;
     setInterval(function(){
       that.click()
-    },500);
+    },1000);
   })
 });
 
