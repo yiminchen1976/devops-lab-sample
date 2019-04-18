@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('init'){
             steps{
-                git 'https://github.com/abola/devops-lab-sample.git'	
+                checkout scm
             }
         }
     
