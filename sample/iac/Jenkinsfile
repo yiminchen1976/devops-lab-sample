@@ -22,23 +22,35 @@ pipeline {
                 expression { params.stage == 'ci' }
             }
             steps{
+                // build with tools and build docker image
                 sh "cd sample/iac/frontend-python && docker build -t gcr.io/${params.googleProjectId}/frontend-python:$BUILD_TAG ."
                 sh "cd sample/iac/backend-java && mvn -Dmaven.test.skip=true package && docker build -t gcr.io/${params.googleProjectId}/backend-java:$BUILD_TAG ."
                 sh "cd sample/iac/backend-php && docker build -t gcr.io/${params.googleProjectId}/backend-php:$BUILD_TAG ."
-            
+                // show current docker images 
                 sh "docker images"
+                // add real version tag
                 sh "docker tag gcr.io/${params.googleProjectId}/backend-java:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-java:${params.buildTag}"
                 sh "docker tag gcr.io/${params.googleProjectId}/backend-php:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-php:${params.buildTag}"
                 sh "docker tag gcr.io/${params.googleProjectId}/frontend-python:$BUILD_TAG gcr.io/${params.googleProjectId}/frontend-python:${params.buildTag}"
+                // add tag latest
+                sh "docker tag gcr.io/${params.googleProjectId}/backend-java:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-java:latest"
+                sh "docker tag gcr.io/${params.googleProjectId}/backend-php:$BUILD_TAG gcr.io/${params.googleProjectId}/backend-php:latest"
+                sh "docker tag gcr.io/${params.googleProjectId}/frontend-python:$BUILD_TAG gcr.io/${params.googleProjectId}/frontend-python:latest"
+                // show current docker images again
                 sh "docker images"
+                // login GCR 
                 sh "docker login -u oauth2accesstoken -p ${params.gcrCredentials} https://gcr.io"
+                // push image to GCR
                 sh "docker push gcr.io/${params.googleProjectId}/backend-java:${params.buildTag}"
                 sh "docker push gcr.io/${params.googleProjectId}/backend-php:${params.buildTag}"
                 sh "docker push gcr.io/${params.googleProjectId}/frontend-python:${params.buildTag}"
+                sh "docker push gcr.io/${params.googleProjectId}/backend-java:latest"
+                sh "docker push gcr.io/${params.googleProjectId}/backend-php:latest"
+                sh "docker push gcr.io/${params.googleProjectId}/frontend-python:latest"
             }
         }
     
-        stage('deploy'){
+        stage('cd'){
             when {
                 expression { params.stage == 'cd' }
             }
