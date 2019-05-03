@@ -1,7 +1,10 @@
 iac:
   name: iac
+  # define your GCP project name
   google:
     project:
+    
+  # define deployment "backend-java"
   backendjava:
     name: backend-java
     image:
@@ -17,6 +20,8 @@ iac:
       requests:
         cpu: 50m
         memory: 64Mi
+        
+  # define deployment "backend-php"
   backendphp:
     name: backend-php
     image:
@@ -32,6 +37,9 @@ iac:
       requests:
         cpu: 50m
         memory: 64Mi
+        
+
+  # define deployment "frontend-python"   
   frontendpython:
     name: frontend-python
     image:
